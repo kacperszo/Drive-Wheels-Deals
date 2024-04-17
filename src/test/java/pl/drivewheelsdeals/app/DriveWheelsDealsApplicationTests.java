@@ -1,0 +1,13 @@
+package pl.drivewheelsdeals.app;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class DriveWheelsDealsApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
