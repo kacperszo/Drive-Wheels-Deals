@@ -33,7 +33,4 @@ public class Car extends Item{
         this.id = id;
     }
 
-    public Long getId() {
-        return id;
-    }
 }
