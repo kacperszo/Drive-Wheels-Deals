@@ -3,7 +3,7 @@ package pl.drivewheelsdeals.app.model;
 import jakarta.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "shop_user")
 public class User {
     @Id
