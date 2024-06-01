@@ -16,6 +16,18 @@ public class Customer extends User {
     private String street;
     private String country;
 
+    public Customer() {
+    }
+    
+    public Customer(String firstName, String lastName, String email, String password, String phone, String zipCode, String city, String street, String country) {
+        super(firstName, lastName, email, password);
+        this.phone = phone;
+        this.zipCode = zipCode;
+        this.city = city;
+        this.street = street;
+        this.country = country;
+    }
+
     @Override
     public Long getId() {
         return id;

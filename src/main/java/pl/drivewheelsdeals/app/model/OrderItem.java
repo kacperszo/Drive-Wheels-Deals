@@ -9,6 +9,18 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public OrderItem() {
+    }
+
+    public OrderItem(Product product, Order order, int quantity, BigDecimal unitPrice, BigDecimal discount) {
+        this.product = product;
+        this.order = order;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.discount = discount;
+    }
+
     @ManyToOne
     private Product product;
     @ManyToOne(fetch = FetchType.LAZY)

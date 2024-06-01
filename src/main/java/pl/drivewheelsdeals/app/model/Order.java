@@ -19,6 +19,16 @@ public class Order {
     private Timestamp orderDate;
     private BigDecimal totalDiscount;
 
+    public Order() {
+    }
+
+    public Order(Customer customer, List<OrderItem> items, Timestamp orderDate, BigDecimal totalDiscount) {
+        this.customer = customer;
+        this.items = items;
+        this.orderDate = orderDate;
+        this.totalDiscount = totalDiscount;
+    }
+
     public Long getId() {
         return id;
     }

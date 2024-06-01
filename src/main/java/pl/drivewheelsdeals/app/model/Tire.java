@@ -13,6 +13,14 @@ public class Tire extends Product {
     String brand;
     String size;
 
+    public Tire() {
+    }
+
+    public Tire(String brand, String size) {
+        this.brand = brand;
+        this.size = size;
+    }
+
     @Override
     public Long getId() {
         return id;

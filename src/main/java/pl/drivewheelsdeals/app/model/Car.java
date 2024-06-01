@@ -14,6 +14,14 @@ public class Car extends Product {
     String model;
     int year;
 
+
+    public Car(String brand, String model, int year) {
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+    }
+    public Car() {}
+
     @Override
     public Long getId() {
         return id;

@@ -11,6 +11,13 @@ public class Administrator extends User{
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    public Administrator() {
+    }
+
+    public Administrator(String firstName, String lastName, String email, String password) {
+        super(firstName, lastName, email, password);
+    }
+
     @Override
     public Long getId() {
         return id;
