@@ -1,16 +1,21 @@
 package pl.drivewheelsdeals.app.controller;
 
-import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import pl.drivewheelsdeals.app.request.ListOrdersRequest;
-import pl.drivewheelsdeals.app.response.ListOrdersResponse;
+import org.springframework.web.server.ResponseStatusException;
+import pl.drivewheelsdeals.app.model.Customer;
+import pl.drivewheelsdeals.app.model.Order;
+import pl.drivewheelsdeals.app.model.User;
 import pl.drivewheelsdeals.app.service.OrderService;
+import pl.drivewheelsdeals.app.service.UserService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,26 +23,27 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){
+    private final UserService userService;
+
+    public OrderController(OrderService orderService, UserService userService){
         this.orderService = orderService;
+        this.userService = userService;
     }
 
-    @GetMapping
-    public ListOrdersResponse listOrdersFromUserById(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
-        try {
-            return new ListOrdersResponse(orderService.findOrdersFromUserById(request.id));
-        } catch (Exception e){
-            throw new BadRequestException(e.getMessage());
+    @GetMapping("/user/{id}/orders")
+    public List<Order> listOrdersFromUserById(@PathVariable long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(userService.isAdministrator((User) auth.getDetails())){
+            return orderService.findOrdersFromUserById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
-    @GetMapping
-    public ListOrdersResponse listOrdersFromUserByCustomer(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
-        try {
-            return new ListOrdersResponse(orderService.findOrdersFromUserByCustomer(request.customer));
-        } catch (Exception e){
-            throw new BadRequestException(e.getMessage());
-        }
+    @GetMapping("/user/orders")
+    public List<Order> listOrdersFromUserByCustomer() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return orderService.findOrdersFromUserByCustomer((Customer) auth.getDetails());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
