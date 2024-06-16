@@ -45,4 +45,7 @@ public class UserService {
     }
 
 
+    public Customer updateCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
 }

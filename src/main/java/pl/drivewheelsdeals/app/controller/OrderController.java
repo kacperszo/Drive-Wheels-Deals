@@ -22,7 +22,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping
+    @GetMapping("/order")
     public ListOrdersResponse listOrdersFromUserById(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
         try {
             return new ListOrdersResponse(orderService.findOrdersFromUserById(request.id));
@@ -30,15 +30,15 @@ public class OrderController {
             throw new BadRequestException(e.getMessage());
         }
     }
-
-    @GetMapping
-    public ListOrdersResponse listOrdersFromUserByCustomer(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
-        try {
-            return new ListOrdersResponse(orderService.findOrdersFromUserByCustomer(request.customer));
-        } catch (Exception e){
-            throw new BadRequestException(e.getMessage());
-        }
-    }
+//
+//    @GetMapping
+//    public ListOrdersResponse listOrdersFromUserByCustomer(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
+//        try {
+//            return new ListOrdersResponse(orderService.findOrdersFromUserByCustomer(request.customer));
+//        } catch (Exception e){
+//            throw new BadRequestException(e.getMessage());
+//        }
+//    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
