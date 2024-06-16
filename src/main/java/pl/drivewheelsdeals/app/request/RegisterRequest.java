@@ -1,4 +1,4 @@
-package pl.drivewheelsdeals.app.response;
+package pl.drivewheelsdeals.app.request;
 
 import jakarta.validation.constraints.NotBlank;
 import org.antlr.v4.runtime.misc.NotNull;

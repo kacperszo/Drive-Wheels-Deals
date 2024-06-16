@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.drivewheelsdeals.app.model.Customer;
-import pl.drivewheelsdeals.app.response.RegisterRequest;
+import pl.drivewheelsdeals.app.request.RegisterRequest;
 import pl.drivewheelsdeals.app.response.RegisterResponse;
 import pl.drivewheelsdeals.app.service.UserService;
 
