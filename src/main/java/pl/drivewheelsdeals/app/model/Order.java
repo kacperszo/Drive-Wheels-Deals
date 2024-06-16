@@ -22,6 +22,14 @@ public class Order {
     public Order() {
     }
 
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
     public Order(Customer customer, List<OrderItem> items, Timestamp orderDate, BigDecimal totalDiscount) {
         this.customer = customer;
         this.items = items;

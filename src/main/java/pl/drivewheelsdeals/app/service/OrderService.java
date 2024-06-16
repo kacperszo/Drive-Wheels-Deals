@@ -14,29 +14,33 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    public OrderService(OrderRepository orderRepository){
+    public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
-    public Order findOrderById(long id){
+    public Order findOrderById(long id) {
         return orderRepository.findById(id).orElseThrow(EntityExistsException::new);
     }
 
-    public List<Order> findOrdersFromUserById(long id){
+    public List<Order> findOrdersFromUserById(long id) {
         List<Order> usersOrders = new ArrayList<>();
-        for(Order order : orderRepository.findAll()){
+        for (Order order : orderRepository.findAll()) {
             if (order.getCustomer().getId() == id)
                 usersOrders.add(order);
         }
         return usersOrders;
     }
 
-    public List<Order> findOrdersFromUserByCustomer(Customer customer){
+    public List<Order> findOrdersFromUserByCustomer(Customer customer) {
         List<Order> usersOrders = new ArrayList<>();
-        for(Order order : orderRepository.findAll()){
+        for (Order order : orderRepository.findAll()) {
             if (order.getCustomer().equals(customer))
                 usersOrders.add(order);
         }
         return usersOrders;
+    }
+
+    public Order create(Order order) {
+        return orderRepository.save(order);
     }
 }
