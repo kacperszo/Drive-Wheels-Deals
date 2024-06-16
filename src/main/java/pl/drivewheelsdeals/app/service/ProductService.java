@@ -1,5 +1,6 @@
 package pl.drivewheelsdeals.app.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,15 @@ public class ProductService {
 
     public Product getById(Long id) {
         return productRepository.findProductById(id);
+    }
+
+    public Product createProduct(Product product) {
+        return productRepository.save(product);
+    }
+
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        productRepository.delete(product);
     }
 }

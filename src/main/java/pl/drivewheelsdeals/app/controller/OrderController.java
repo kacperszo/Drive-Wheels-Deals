@@ -39,9 +39,17 @@ public class OrderController {
     }
 
     @GetMapping("/order")
-    public ListOrdersResponse listOrdersFromUserById(@Valid @RequestBody ListOrdersRequest request) throws BadRequestException {
+    public ListOrdersResponse listOrdersFromUserById() throws BadRequestException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new BadRequestException("User is not authenticated");
+        }
+        User user = (User) auth.getPrincipal();
+        if (user == null) {
+            throw new BadRequestException("User not found in the authentication context");
+        }
         try {
-            return new ListOrdersResponse(orderService.findOrdersFromUserById(request.id));
+            return new ListOrdersResponse(orderService.findOrdersFromUserById(user.getId()));
         } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
