@@ -47,6 +47,27 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/admin/order")
+    public Iterable<Order> listOrders() throws BadRequestException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new BadRequestException("User is not authenticated");
+        }
+        User user = (User) auth.getPrincipal();
+        if (user == null) {
+            throw new BadRequestException("User not found in the authentication context");
+        }
+        if (!userService.isAdministrator(user)) {
+            throw new BadRequestException("As Admin you cannot edit your customer profile");
+        }
+
+        try {
+            return orderService.findAll();
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
     @PostMapping("/order/make")
     public CreateOrderResponse createOrder() throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

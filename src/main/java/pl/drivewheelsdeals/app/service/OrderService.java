@@ -28,17 +28,11 @@ public class OrderService {
         Customer c = (Customer) userService.findUserById(id);
         return c.getOrders();
     }
-
-    public List<Order> findOrdersFromUserByCustomer(Customer customer) {
-        List<Order> usersOrders = new ArrayList<>();
-        for (Order order : orderRepository.findAll()) {
-            if (order.getCustomer().equals(customer))
-                usersOrders.add(order);
-        }
-        return usersOrders;
-    }
-
     public Order create(Order order) {
         return orderRepository.save(order);
+    }
+
+    public Iterable<Order> findAll() {
+        return orderRepository.findAll();
     }
 }
