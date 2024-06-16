@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -17,6 +18,9 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+
+    @ManyToMany
+    private List<Product> basket;
 
     public User() {
     }
@@ -99,4 +103,11 @@ public class User implements UserDetails {
     }
 
 
+    public List<Product> getBasket() {
+        return basket;
+    }
+
+    public void setBasket(List<Product> basket) {
+        this.basket = basket;
+    }
 }
