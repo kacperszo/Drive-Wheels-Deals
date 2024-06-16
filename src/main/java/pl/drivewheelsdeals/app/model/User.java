@@ -19,6 +19,9 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
+
     public User() {
     }
 
@@ -27,6 +30,14 @@ public class User implements UserDetails {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public Long getId() {
