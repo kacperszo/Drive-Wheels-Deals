@@ -24,4 +24,8 @@ public class ProductService {
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
+
+    public Product getById(Long id) {
+        return productRepository.findProductById(id);
+    }
 }
