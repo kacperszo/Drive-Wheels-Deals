@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.math.BigDecimal;
+
 @Entity
 public class Tire extends Product {
     @Id
@@ -16,7 +18,8 @@ public class Tire extends Product {
     public Tire() {
     }
 
-    public Tire(String brand, String size) {
+    public Tire(String brand, String size, BigDecimal price) {
+        super(price);
         this.brand = brand;
         this.size = size;
     }

@@ -12,6 +12,13 @@ public class Product {
     private Long id;
     private BigDecimal price;
 
+    public Product() {
+    }
+
+    public Product(BigDecimal price) {
+        this.price = price;
+    }
+
     public Long getId() {
         return id;
     }

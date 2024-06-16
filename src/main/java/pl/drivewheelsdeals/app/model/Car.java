@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.math.BigDecimal;
+
 @Entity
 public class Car extends Product {
     @Id
@@ -15,7 +17,8 @@ public class Car extends Product {
     int year;
 
 
-    public Car(String brand, String model, int year) {
+    public Car(String brand, String model, int year, BigDecimal price) {
+        super(price);
         this.brand = brand;
         this.model = model;
         this.year = year;
