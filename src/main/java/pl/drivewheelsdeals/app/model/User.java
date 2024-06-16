@@ -19,9 +19,6 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-    @ManyToMany
-    private List<Product> basket;
-
     public User() {
     }
 
@@ -100,14 +97,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-
-    public List<Product> getBasket() {
-        return basket;
-    }
-
-    public void setBasket(List<Product> basket) {
-        this.basket = basket;
     }
 }

@@ -1,9 +1,8 @@
 package pl.drivewheelsdeals.app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Customer extends User {
@@ -15,6 +14,9 @@ public class Customer extends User {
     private String city;
     private String street;
     private String country;
+    @ManyToMany
+    private List<Product> basket;
+
 
     public Customer() {
     }
@@ -26,6 +28,14 @@ public class Customer extends User {
         this.city = city;
         this.street = street;
         this.country = country;
+    }
+
+    public List<Product> getBasket() {
+        return basket;
+    }
+
+    public void setBasket(List<Product> basket) {
+        this.basket = basket;
     }
 
     @Override
@@ -77,4 +87,5 @@ public class Customer extends User {
     public void setCountry(String country) {
         this.country = country;
     }
+
 }
