@@ -1,6 +1,7 @@
 package pl.drivewheelsdeals.app.service;
 
 import org.apache.coyote.BadRequestException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -70,5 +71,11 @@ public class ProductService {
                 tireRepository.deleteById(product.getId());
             }
         }
+
+
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
     }
 }
