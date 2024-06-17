@@ -1,10 +1,10 @@
 package pl.drivewheelsdeals.app.response;
 
-public class ProductOperationResponse {
+public class ProductRemoveResponse {
 
     public String status;
 
-    public ProductOperationResponse(String status){
+    public ProductRemoveResponse(String status){
         this.status = status;
     }
 }
