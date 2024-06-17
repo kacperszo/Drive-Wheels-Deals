@@ -1,7 +1,6 @@
 package pl.drivewheelsdeals.app.service;
 
 import org.apache.coyote.BadRequestException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,8 @@ public class ProductService {
         return productRepository.findProductById(id);
     }
 
-    public Product createProduct(Product product){
-        if(product instanceof Car){
+    public Product createProduct(Product product) {
+        if (product instanceof Car) {
             return carRepository.save((Car) product);
         } else {
             return tireRepository.save((Tire) product);
@@ -42,14 +41,14 @@ public class ProductService {
     }
 
     public Product updateProduct(Product product) throws BadRequestException {
-        if(product instanceof Car){
-            if(carRepository.findById(product.getId()).isEmpty()){
+        if (product instanceof Car) {
+            if (carRepository.findById(product.getId()).isEmpty()) {
                 throw new BadRequestException("Car with this id does not exist");
             } else {
                 return carRepository.save((Car) product);
             }
         } else {
-            if(tireRepository.findById(product.getId()).isEmpty()){
+            if (tireRepository.findById(product.getId()).isEmpty()) {
                 throw new BadRequestException("Tire with this id does not exist");
             } else {
                 return tireRepository.save((Tire) product);
@@ -58,24 +57,19 @@ public class ProductService {
     }
 
     public void removeProduct(Product product) throws BadRequestException {
-        if(product instanceof Car) {
-            if(carRepository.findById(product.getId()).isEmpty()){
+        if (product instanceof Car) {
+            if (carRepository.findById(product.getId()).isEmpty()) {
                 throw new BadRequestException("Car with this id does not exist");
             } else {
                 carRepository.deleteById(product.getId());
             }
         } else {
-            if(tireRepository.findById(product.getId()).isEmpty()){
+            if (tireRepository.findById(product.getId()).isEmpty()) {
                 throw new BadRequestException("Tire with this id does not exist");
             } else {
                 tireRepository.deleteById(product.getId());
             }
         }
-
-
-    public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
     }
 }
