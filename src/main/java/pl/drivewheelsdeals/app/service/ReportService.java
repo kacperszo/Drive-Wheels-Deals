@@ -5,21 +5,25 @@ import pl.drivewheelsdeals.app.model.Car;
 import pl.drivewheelsdeals.app.model.Tire;
 import pl.drivewheelsdeals.app.reports.SoldToCountry;
 import pl.drivewheelsdeals.app.reports.TypeSold;
+import pl.drivewheelsdeals.app.reports.CustomersPerCountry;
+import pl.drivewheelsdeals.app.repository.CustomerRepository;
 import pl.drivewheelsdeals.app.repository.OrderRepository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.DateTimeException;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ReportService {
     private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
 
-    public ReportService(OrderRepository orderRepository) {
+    public ReportService(OrderRepository orderRepository, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
+        this.customerRepository = customerRepository;
     }
 
     public BigDecimal incomeInTimePeriod(Timestamp from, Timestamp to) {
@@ -106,5 +110,19 @@ public class ReportService {
             }
         });
         return new SoldToCountry(country, carsSold.get());
+    }
+
+    public List<CustomersPerCountry> getCustomersPerCountry() {
+        var customersPerCountryMap = new HashMap<String, Integer>();
+
+        customerRepository.findAll().forEach(customer -> {
+            customersPerCountryMap.compute(customer.getCountry(), (k, current) -> current == null ? 1 : current + 1);
+        });
+
+        List<CustomersPerCountry> customersPerCountry = new LinkedList<>();
+        for (String country : customersPerCountryMap.keySet()) {
+            customersPerCountry.add(new CustomersPerCountry(country, customersPerCountryMap.get(country)));
+        }
+        return customersPerCountry;
     }
 }
