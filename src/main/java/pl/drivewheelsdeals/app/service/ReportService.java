@@ -34,7 +34,7 @@ public class ReportService {
             order.getItems().forEach(item -> {
                orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(item.getDiscount())));
             });
-            income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
+            income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount() != null ? order.getTotalDiscount() : BigDecimal.valueOf(0))))));
         });
         return income.get();
     }

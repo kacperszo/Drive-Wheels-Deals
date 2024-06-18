@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ import pl.drivewheelsdeals.app.response.ProductCreateEditResponse;
 import pl.drivewheelsdeals.app.response.ProductRemoveResponse;
 import pl.drivewheelsdeals.app.service.ProductService;
 import pl.drivewheelsdeals.app.service.UserService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class ProductController {
@@ -136,6 +140,13 @@ public class ProductController {
         } else {
             throw new BadRequestException("Invalid product type");
         }
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public Map<String, String> handleGeneralBadRequestExceptions(BadRequestException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        return errors;
     }
 
 }

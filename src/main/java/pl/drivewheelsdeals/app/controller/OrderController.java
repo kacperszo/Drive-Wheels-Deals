@@ -105,6 +105,8 @@ public class OrderController {
 
         for (Product product : basket) {
             var oi = new OrderItem(product, order, product.getPrice(), BigDecimal.ZERO);
+            product.setQuantityInStock(product.getQuantityInStock() - 1);
+            productService.updateProduct(product);
             order.getItems().add(oi);
         }
 
