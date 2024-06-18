@@ -3,6 +3,7 @@ package pl.drivewheelsdeals.app.service;
 import org.springframework.stereotype.Service;
 import pl.drivewheelsdeals.app.model.Car;
 import pl.drivewheelsdeals.app.model.Tire;
+import pl.drivewheelsdeals.app.reports.BrandsSold;
 import pl.drivewheelsdeals.app.reports.SoldToCountry;
 import pl.drivewheelsdeals.app.reports.TypeSold;
 import pl.drivewheelsdeals.app.reports.CustomersPerCountry;
@@ -26,22 +27,14 @@ public class ReportService {
         this.customerRepository = customerRepository;
     }
 
-    public BigDecimal incomeInTimePeriod(Timestamp from, Timestamp to) {
-        if (from == null || to == null) {
-            throw new NullPointerException("Dates cannot be null");
-        }
-        if (from.after(to)) {
-            throw new DateTimeException("Start date cannot be after end date");
-        }
+    public BigDecimal sumaricIncome() {
         AtomicReference<BigDecimal> income = new AtomicReference<>(BigDecimal.ZERO);
         orderRepository.findAll().forEach(order -> {
-            if (order.getOrderDate().after(from) && order.getOrderDate().before(to)) {
-                var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
-                order.getItems().forEach(item -> {
-//                   orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))));
-                });
-                income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
-            }
+            var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
+            order.getItems().forEach(item -> {
+               orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(item.getDiscount())));
+            });
+            income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
         });
         return income.get();
     }
@@ -53,9 +46,9 @@ public class ReportService {
         orderRepository.findAll().forEach(order -> {
            order.getItems().forEach(item -> {
                if (item.getProduct() instanceof Car) {
-//                   cars.addAndGet(item.getQuantity());
+                   cars.incrementAndGet();
                } else if (item.getProduct() instanceof Tire) {
-//                   tires.addAndGet(item.getQuantity());
+                   tires.incrementAndGet();
                }
            });
         });
@@ -81,7 +74,7 @@ public class ReportService {
             if (customer.getCountry().equals(country)) {
                 order.getItems().forEach(item -> {
                     if (item.getProduct() instanceof Car) {
-//                        carsSold.addAndGet(item.getQuantity());
+                        carsSold.incrementAndGet();
                     }
                 });
             }
@@ -104,7 +97,7 @@ public class ReportService {
             if (customer.getCountry().equals(country)) {
                 order.getItems().forEach(item -> {
                     if (item.getProduct() instanceof Tire) {
-//                        carsSold.addAndGet(item.getQuantity());
+                        carsSold.incrementAndGet();
                     }
                 });
             }
@@ -124,5 +117,25 @@ public class ReportService {
             customersPerCountry.add(new CustomersPerCountry(country, customersPerCountryMap.get(country)));
         }
         return customersPerCountry;
+    }
+
+    public List<BrandsSold> getCarsSoldByBrand() {
+        var brandMap = new HashMap<String, Integer>();
+
+        orderRepository.findAll().forEach(order -> {
+            order.getItems().forEach(item -> {
+                if (item.getProduct() instanceof Car) {
+                    var car = (Car) item.getProduct();
+                    if (car.getBrand() != null) {
+                        brandMap.compute(car.getBrand(), (k, current) -> current == null ? 1 : current + 1);
+                    }
+                }
+            });
+        });
+        List<BrandsSold> brandsSold = new LinkedList<>();
+        for (String brand : brandMap.keySet()) {
+            brandsSold.add(new BrandsSold(brand, brandMap.get(brand)));
+        }
+        return brandsSold;
     }
 }
