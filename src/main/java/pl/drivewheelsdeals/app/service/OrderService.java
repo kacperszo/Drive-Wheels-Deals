@@ -5,9 +5,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import pl.drivewheelsdeals.app.model.Customer;
 import pl.drivewheelsdeals.app.model.Order;
+import pl.drivewheelsdeals.app.model.OrderItem;
+import pl.drivewheelsdeals.app.repository.OrderItemRepository;
 import pl.drivewheelsdeals.app.repository.OrderRepository;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -15,10 +17,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserService userService;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(OrderRepository orderRepository, UserService userService) {
+    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.userService = userService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     public Order findOrderById(long id) {
@@ -41,4 +45,16 @@ public class OrderService {
     public Order update(Order order) {
         return orderRepository.save(order);
     }
+
+    public OrderItem findOrderItemById(long id){
+        return orderItemRepository.findById(id).orElseThrow(EntityExistsException::new);
+    }
+
+    public Iterable<OrderItem> findAllOrderedItems(){
+        return orderItemRepository.findAll();
+    }
+
+    public OrderItem updateItem(OrderItem item){
+        return orderItemRepository.save(item);
+    };
 }

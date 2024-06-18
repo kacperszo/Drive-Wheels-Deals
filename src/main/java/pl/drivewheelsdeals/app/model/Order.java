@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
 @Table(name = "orders")
@@ -68,6 +70,19 @@ public class Order {
 
     public BigDecimal getTotalDiscount() {
         return totalDiscount;
+    }
+
+    public BigDecimal getDiscountedAmount(){
+        // Take the price of each product, subtract the discounted amount each time we iterate over an item
+        // and in the end, subtract from the sum using totalDiscount
+        AtomicReference<BigDecimal> discountedAmount = new AtomicReference<>(BigDecimal.ZERO);
+        items.forEach(item -> {
+            discountedAmount.set((discountedAmount.get()).add(item.getUnitPrice()).subtract(item.getUnitPrice().multiply(item.getDiscount())));
+        });
+
+        discountedAmount.set((discountedAmount.get()).subtract(discountedAmount.get().multiply(totalDiscount)));
+
+        return discountedAmount.get();
     }
 
     public void setTotalDiscount(BigDecimal totalDiscount) {

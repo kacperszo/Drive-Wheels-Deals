@@ -10,8 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.drivewheelsdeals.app.model.*;
 import pl.drivewheelsdeals.app.repository.OrderItemRepository;
-import pl.drivewheelsdeals.app.response.CreateOrderResponse;
-import pl.drivewheelsdeals.app.response.ListOrdersResponse;
+import pl.drivewheelsdeals.app.request.SetDiscountRequest;
+import pl.drivewheelsdeals.app.response.*;
 import pl.drivewheelsdeals.app.service.OrderService;
 import pl.drivewheelsdeals.app.service.ProductService;
 import pl.drivewheelsdeals.app.service.UserService;
@@ -29,13 +29,11 @@ public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
     private final UserService userService;
-    private final OrderItemRepository orderItemRepository;
 
-    public OrderController(OrderService orderService, ProductService productService, UserService userService, OrderItemRepository orderItemRepository) {
+    public OrderController(OrderService orderService, ProductService productService, UserService userService) {
         this.orderService = orderService;
         this.productService = productService;
         this.userService = userService;
-        this.orderItemRepository = orderItemRepository;
     }
 
     @GetMapping("/order")
@@ -116,6 +114,60 @@ public class OrderController {
         userService.updateCustomer(customer);
 
         return new CreateOrderResponse("success");
+    }
+
+    @PostMapping("/order/set-discount/{id}")
+    public SetOrderDiscountResponse setOrderDiscount(@PathVariable Long id, @RequestBody SetDiscountRequest request) throws BadRequestException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        if (!userService.isAdministrator(user)) {
+            throw new BadRequestException("Only admin has access to this resource");
+        }
+
+        Order order = orderService.findOrderById(id);
+
+        if(order == null){
+            throw new BadRequestException("An order with this id does not exist");
+        }
+
+        order.setTotalDiscount(request.discount);
+        Order updated = orderService.update(order);
+
+        return new SetOrderDiscountResponse(updated);
+    }
+
+    @GetMapping("/ordered-items")
+    public Iterable<OrderItem> listOrderedItems() throws BadRequestException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        if (!userService.isAdministrator(user)) {
+            throw new BadRequestException("Only admin has access to this resource");
+        }
+
+        return orderService.findAllOrderedItems();
+    }
+
+    @PostMapping("/ordered-items/set-discount/{id}")
+    public SetOrderItemDiscountResponse setOrderItemDiscount(@PathVariable Long id, @RequestBody SetDiscountRequest request) throws BadRequestException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        if (!userService.isAdministrator(user)) {
+            throw new BadRequestException("Only admin has access to this resource");
+        }
+
+        OrderItem orderItem = orderService.findOrderItemById(id);
+
+        if(orderItem == null){
+            throw new BadRequestException("There is no item order with this id");
+        }
+
+        orderItem.setDiscount(request.discount);
+        OrderItem updated = orderService.updateItem(orderItem);
+
+        return new SetOrderItemDiscountResponse(updated);
     }
 
 
