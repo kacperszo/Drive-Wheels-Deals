@@ -32,7 +32,7 @@ public class ReportService {
         orderRepository.findAll().forEach(order -> {
             var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
             order.getItems().forEach(item -> {
-               orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(item.getDiscount())));
+               orderIncome.set(orderIncome.get().add(item.getUnitPrice().subtract(item.getUnitPrice().multiply(item.getDiscount()))));
             });
             income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount() != null ? order.getTotalDiscount() : BigDecimal.valueOf(0))))));
         });

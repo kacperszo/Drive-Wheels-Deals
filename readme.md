@@ -570,3 +570,327 @@ Klasa zawiera informacje o zamówionych produktach
 
 Pole `ID` jest kluczem głównym.
 Pole `order_id` jest kluczem obcym do tabeli `Order`, a pole `product_id` do tabeli `Product`.
+
+## Endpoints
+
+### POST /login
+Request
+```java
+public class LoginRequest {
+    private String email;
+    private String password;
+
+    public LoginRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+}
+```
+
+Response
+```java
+public class LoginResponse {
+    private String token;
+}
+```
+
+Zwraca token JWT gdy dane logowania są poprawne, w przeciwnym razie rzuca `BadCredentialsException`
+
+### POST /register
+
+Request
+```java
+public class RegisterRequest {
+    @NotBlank(message = "Country is required")
+
+    public String country;
+    @NotBlank(message = "Email is required")
+    public String email;
+    @NotBlank(message = "Password is required")
+
+    public String password;
+    @NotBlank(message = "City is required")
+
+    public String city;
+    @NotBlank(message = "Street is required")
+
+    public String street;
+    @NotBlank(message = "Zip code is required")
+    public String zipCode;
+    @NotBlank(message = "Phone is required")
+    public String phone;
+    @NotBlank(message = "Firstname is required")
+    public String firstName;
+    @NotBlank(message = "lastname is required")
+
+    public String lastName;
+}
+```
+
+Response
+```java
+public class RegisterResponse {
+    public String country;
+    public String email;
+    public String city;
+    public String street;
+    public String zipCode;
+    public String phone;
+    public String firstName;
+    public String lastName;
+}
+```
+
+Tworzy nowego użytkownika. Jeśli wszystkie dane są poprawne zwraca je (bez hasła).
+W przeciwnym wypadku `BadRequestError`
+
+### PUT /user/profile
+
+Request
+```java
+public class EditProfileRequest {
+    public String country;
+    public String city;
+    public String street;
+    public String zipCode;
+    public String phone;
+    public String firstName;
+    public String lastName;
+}
+```
+
+Response
+```java
+public class EditProfileResponse {
+    public String country;
+    public String city;
+    public String street;
+    public String zipCode;
+    public String phone;
+    public String firstName;
+    public String lastName;
+}
+```
+
+Zmienia dane zalogowanego użytkownika. Jeśli użytkownik nie jest zalogowany lub jest zalogowany
+jako administrator rzuca `BadRequestException`
+
+### GET /user/profile
+
+Response
+```java
+public class EditProfileResponse {
+    public String country;
+    public String city;
+    public String street;
+    public String zipCode;
+    public String phone;
+    public String firstName;
+    public String lastName;
+}
+```
+
+Zwraca informacje o profilu.
+
+### GET /order
+
+Response
+```java
+public class ListOrdersResponse {
+    public List<Order> orders;
+}
+```
+
+Zwraca listę zamówień dla aktualnie zalogowanego użytkownika. W przeciwnym wypadku `BadRequestException`
+
+### GET /order/admin
+
+Response:  
+Lista wszystkich zamówień `Iterable<Order>`
+
+Zwraca listę wszystkich zamówień. Jedynie admin może korzystać z tego endpointa.
+W przypadku niepowodzenia `BadRequestException`.
+
+### POST /order/make
+
+Response
+```java
+public class CreateOrderResponse {
+    public String status;
+}
+```
+
+Tworzy zamówienie na podstawie koszyka zalogowanego użytkownika. W przypadku niepowodzenia `BadRequestException`
+
+### GET /product
+
+Response  
+Lista produktów w postaci `List<Product>`
+
+Zwraca listę wszystkich produktów.
+
+### GET /product/{id}
+
+Response  
+Produkt w postaci`Product`.
+
+Wyszukuje produkt po `ID`.
+
+### POST /product/admin/add
+
+Request
+```java
+public class ProductOperationRequest {
+    @NotBlank(message = "Product type is required")
+    public String productType;
+    public BigDecimal price;
+    public Long id;
+    public String brand;
+    public String model;
+    public Integer year;
+    public String size;
+}
+```
+
+Response
+```java
+public class ProductCreateEditResponse {
+
+    public Long id;
+    public BigDecimal price;
+    public String brand;
+    public String model;
+    public Integer year;
+    public String size;
+}
+```
+
+Dodaje produkt. Możliwe do wykonania jedynie przez admina. W wypadku niepowodzenia
+`BadRequestException`
+
+### POST /product/admin/edit
+
+Request
+```java
+public class ProductOperationRequest {
+    @NotBlank(message = "Product type is required")
+    public String productType;
+    public BigDecimal price;
+    public Long id;
+    public String brand;
+    public String model;
+    public Integer year;
+    public String size;
+}
+```
+
+Response
+```java
+public class ProductCreateEditResponse {
+
+    public Long id;
+    public BigDecimal price;
+    public String brand;
+    public String model;
+    public Integer year;
+    public String size;
+}
+```
+Edytuje istniejący produkt. Możliwe do wykonania jedynie przez admina. W wypadku niepowodzenia
+`BadRequestException`
+
+### POST /product/admin/delete
+
+Request
+```java
+public class ProductOperationRequest {
+    @NotBlank(message = "Product type is required")
+    public String productType;
+    public BigDecimal price;
+    public Long id;
+    public String brand;
+    public String model;
+    public Integer year;
+    public String size;
+}
+```
+
+Response
+```java
+public class ProductRemoveResponse {
+    public String status;
+}
+```
+
+Usuwa produkt. Jedynie dla admina. W wypadku niepowodzenia `BadRequestException`
+
+### GET /basket
+
+Response  
+Lista produktów w postaci `List<Product>`.
+
+Zwraca koszyk aktualnie zalogowanego użytkownika. W wypadku niepowodzenia `BadRequestException`.
+
+### POST /basket/add/{id}
+
+Response  
+Lista produktów w postaci `List<Product>`
+
+Dodaje element o zadanym `ID` do koszyka, a nastepnie zwraca uaktualniony koszyk. W wypadku niepowodzenia `BadRequestException`.
+
+### DELETE /basket/remove/{id}
+
+Response  
+Lista produktów w postaci `List<Product>`
+
+Usuwa element z koszyka, zwraca uaktualniony koszyk. W wypadku niepowodzenia `BadRequestException`.
+
+### GET /report/cars-sold-by-brand
+
+Response  
+Lista w postaci `List<BrandsSold>` zawierająca informację o ilości sprzedanych aut dla każdej marki.
+
+### GET /report/cars-sold-to-country/{country}
+
+Response  
+Lista postawci `List<SoldToCountry>`.
+
+Zwraca informacje o ilości sprzedanych aut do zadanego kraju.
+
+### GET /report/tires-sold-to-country/{country}
+
+Response  
+Lista postaci `List<SoldToCountry>`
+
+Zwraca informacje o ilości sprzedanych opon do zadanego kraju.
+
+### GET /report/customers-per-country
+
+Response  
+Lista postaci `List<CustomersPerCountry>`
+
+Zwraca informacje o ilości klientów dla każdego kraju.
+
+### GET /report/income
+
+Response  
+`BigDecimal`
+
+Zwraca informacje o całkowitym uzyskanym dochodzie.
+
+### GET /report/type-sold
+
+Response  
+Lista postaci `List<TypeSold>`
+
+Zwraca informacje o ilości sprzedanego towaru dla każdego typu.
+
+
+
+
+
+
+
+
+
+
