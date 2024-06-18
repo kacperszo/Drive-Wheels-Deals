@@ -3,13 +3,13 @@ package pl.drivewheelsdeals.app.service;
 import org.springframework.stereotype.Service;
 import pl.drivewheelsdeals.app.model.Car;
 import pl.drivewheelsdeals.app.model.Tire;
+import pl.drivewheelsdeals.app.reports.SoldToCountry;
 import pl.drivewheelsdeals.app.reports.TypeSold;
 import pl.drivewheelsdeals.app.repository.OrderRepository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.DateTimeException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,5 +60,51 @@ public class ReportService {
         var tiresSold = new TypeSold("Tire", tires.get());
 
         return List.of(carsSold, tiresSold);
+    }
+
+    public SoldToCountry carsSoldToCountry(String country) {
+        if (country == null) {
+            throw new NullPointerException("Country cannot be null");
+        }
+
+        AtomicInteger carsSold = new AtomicInteger();
+
+        orderRepository.findAll().forEach(order -> {
+            var customer = order.getCustomer();
+            if (customer == null) {
+                throw new NullPointerException("Customer cannot be null");
+            }
+            if (customer.getCountry().equals(country)) {
+                order.getItems().forEach(item -> {
+                    if (item.getProduct() instanceof Car) {
+                        carsSold.addAndGet(item.getQuantity());
+                    }
+                });
+            }
+        });
+        return new SoldToCountry(country, carsSold.get());
+    }
+
+    public SoldToCountry tiresSoldToCountry(String country) {
+        if (country == null) {
+            throw new NullPointerException("Country cannot be null");
+        }
+
+        AtomicInteger carsSold = new AtomicInteger();
+
+        orderRepository.findAll().forEach(order -> {
+            var customer = order.getCustomer();
+            if (customer == null) {
+                throw new NullPointerException("Customer cannot be null");
+            }
+            if (customer.getCountry().equals(country)) {
+                order.getItems().forEach(item -> {
+                    if (item.getProduct() instanceof Tire) {
+                        carsSold.addAndGet(item.getQuantity());
+                    }
+                });
+            }
+        });
+        return new SoldToCountry(country, carsSold.get());
     }
 }
