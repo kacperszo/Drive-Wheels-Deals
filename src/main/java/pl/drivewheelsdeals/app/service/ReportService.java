@@ -26,22 +26,14 @@ public class ReportService {
         this.customerRepository = customerRepository;
     }
 
-    public BigDecimal incomeInTimePeriod(Timestamp from, Timestamp to) {
-        if (from == null || to == null) {
-            throw new NullPointerException("Dates cannot be null");
-        }
-        if (from.after(to)) {
-            throw new DateTimeException("Start date cannot be after end date");
-        }
+    public BigDecimal sumaricIncome() {
         AtomicReference<BigDecimal> income = new AtomicReference<>(BigDecimal.ZERO);
         orderRepository.findAll().forEach(order -> {
-            if (order.getOrderDate().after(from) && order.getOrderDate().before(to)) {
-                var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
-                order.getItems().forEach(item -> {
-//                   orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))));
-                });
-                income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
-            }
+            var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
+            order.getItems().forEach(item -> {
+               orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(item.getDiscount())));
+            });
+            income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
         });
         return income.get();
     }
@@ -53,9 +45,9 @@ public class ReportService {
         orderRepository.findAll().forEach(order -> {
            order.getItems().forEach(item -> {
                if (item.getProduct() instanceof Car) {
-//                   cars.addAndGet(item.getQuantity());
+                   cars.incrementAndGet();
                } else if (item.getProduct() instanceof Tire) {
-//                   tires.addAndGet(item.getQuantity());
+                   tires.incrementAndGet();
                }
            });
         });
@@ -81,7 +73,7 @@ public class ReportService {
             if (customer.getCountry().equals(country)) {
                 order.getItems().forEach(item -> {
                     if (item.getProduct() instanceof Car) {
-//                        carsSold.addAndGet(item.getQuantity());
+                        carsSold.incrementAndGet();
                     }
                 });
             }
@@ -104,7 +96,7 @@ public class ReportService {
             if (customer.getCountry().equals(country)) {
                 order.getItems().forEach(item -> {
                     if (item.getProduct() instanceof Tire) {
-//                        carsSold.addAndGet(item.getQuantity());
+                        carsSold.incrementAndGet();
                     }
                 });
             }

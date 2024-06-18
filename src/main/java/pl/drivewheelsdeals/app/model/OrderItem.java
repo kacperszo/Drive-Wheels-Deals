@@ -34,4 +34,8 @@ public class OrderItem {
     public Product getProduct() {
         return product;
     }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
 }
