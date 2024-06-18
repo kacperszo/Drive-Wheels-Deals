@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class ProductOperationRequest {
     @NotBlank(message = "Product type is required")
-    public String product_type;
+    public String productType;
     public BigDecimal price;
 
     // Optional - used in removing
@@ -20,8 +20,8 @@ public class ProductOperationRequest {
     // Optional - tire
     public String size;
 
-    public ProductOperationRequest(BigDecimal price, String product_type){
+    public ProductOperationRequest(BigDecimal price, String productType){
         this.price = price;
-        this.product_type = product_type;
+        this.productType = productType;
     }
 }

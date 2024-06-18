@@ -4,10 +4,8 @@ import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import pl.drivewheelsdeals.app.model.Car;
 import pl.drivewheelsdeals.app.model.Product;
@@ -52,7 +50,7 @@ public class ProductController {
             throw new BadRequestException("User is not an admin");
         }
 
-        if(request.product_type.equals("Car")){
+        if(request.productType.equals("Car")){
             Car product = new Car();
             product.setBrand(request.brand);
             product.setModel(request.model);
@@ -63,7 +61,7 @@ public class ProductController {
 
             return new ProductCreateEditResponse(product);
 
-        } else if (request.product_type.equals("Tire")) {
+        } else if (request.productType.equals("Tire")) {
             Tire product = new Tire();
             product.setBrand(request.brand);
             product.setSize(request.size);
@@ -86,7 +84,7 @@ public class ProductController {
             throw new BadRequestException("User is not an admin");
         }
 
-        if(request.product_type.equals("Car")){
+        if(request.productType.equals("Car")){
             Car product = (Car) productService.getById(request.id);
             product.setYear(request.year);
             product.setPrice(request.price);
@@ -97,7 +95,7 @@ public class ProductController {
 
             return new ProductCreateEditResponse(product);
 
-        } else if (request.product_type.equals("Tire")) {
+        } else if (request.productType.equals("Tire")) {
             Tire product = (Tire) productService.getById(request.id);
             product.setPrice(request.price);
             product.setBrand(request.brand);
@@ -120,7 +118,7 @@ public class ProductController {
             throw new BadRequestException("User is not an admin");
         }
 
-        if(request.product_type.equals("Car")){
+        if(request.productType.equals("Car")){
             Car product = new Car();
             product.setId(request.id);
 
@@ -128,7 +126,7 @@ public class ProductController {
 
             return new ProductRemoveResponse("success");
 
-        } else if (request.product_type.equals("Tire")) {
+        } else if (request.productType.equals("Tire")) {
             Tire product = new Tire();
             product.setId(request.id);
 
