@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import pl.drivewheelsdeals.app.model.User;
+import pl.drivewheelsdeals.app.reports.BrandsSold;
 import pl.drivewheelsdeals.app.reports.CustomersPerCountry;
 import pl.drivewheelsdeals.app.reports.SoldToCountry;
 import pl.drivewheelsdeals.app.reports.TypeSold;
@@ -73,5 +74,13 @@ public class ReportController {
             throw new BadRequestException("User is not an administrator!");
         }
         return reportService.getCustomersPerCountry();
+    }
+
+    @GetMapping("/report/cars-sold-by-brand")
+    public List<BrandsSold> getCarsSoldByBrand() throws BadRequestException {
+        if (!authenticate()) {
+            throw new BadRequestException("User is not an administrator!");
+        }
+        return reportService.getCarsSoldByBrand();
     }
 }

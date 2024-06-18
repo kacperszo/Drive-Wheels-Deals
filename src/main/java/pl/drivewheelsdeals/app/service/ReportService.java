@@ -3,6 +3,7 @@ package pl.drivewheelsdeals.app.service;
 import org.springframework.stereotype.Service;
 import pl.drivewheelsdeals.app.model.Car;
 import pl.drivewheelsdeals.app.model.Tire;
+import pl.drivewheelsdeals.app.reports.BrandsSold;
 import pl.drivewheelsdeals.app.reports.SoldToCountry;
 import pl.drivewheelsdeals.app.reports.TypeSold;
 import pl.drivewheelsdeals.app.reports.CustomersPerCountry;
@@ -116,5 +117,25 @@ public class ReportService {
             customersPerCountry.add(new CustomersPerCountry(country, customersPerCountryMap.get(country)));
         }
         return customersPerCountry;
+    }
+
+    public List<BrandsSold> getCarsSoldByBrand() {
+        var brandMap = new HashMap<String, Integer>();
+
+        orderRepository.findAll().forEach(order -> {
+            order.getItems().forEach(item -> {
+                if (item.getProduct() instanceof Car) {
+                    var car = (Car) item.getProduct();
+                    if (car.getBrand() != null) {
+                        brandMap.compute(car.getBrand(), (k, current) -> current == null ? 1 : current + 1);
+                    }
+                }
+            });
+        });
+        List<BrandsSold> brandsSold = new LinkedList<>();
+        for (String brand : brandMap.keySet()) {
+            brandsSold.add(new BrandsSold(brand, brandMap.get(brand)));
+        }
+        return brandsSold;
     }
 }
