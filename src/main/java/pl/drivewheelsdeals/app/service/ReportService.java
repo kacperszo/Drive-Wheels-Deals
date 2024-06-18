@@ -17,7 +17,10 @@ public class ReportService {
         this.orderRepository = orderRepository;
     }
 
-    public BigDecimal incomeInTimePeriod(@NotNull Timestamp from, @NotNull Timestamp to) {
+    public BigDecimal incomeInTimePeriod(Timestamp from, Timestamp to) {
+        if (from == null || to == null) {
+            throw new NullPointerException("Dates cannot be null");
+        }
         if (from.after(to)) {
             throw new DateTimeException("Start date cannot be after end date");
         }
