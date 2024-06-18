@@ -1,5 +1,6 @@
 package pl.drivewheelsdeals.app.controller;
 
+import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -8,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.drivewheelsdeals.app.model.*;
+import pl.drivewheelsdeals.app.repository.OrderItemRepository;
 import pl.drivewheelsdeals.app.response.CreateOrderResponse;
 import pl.drivewheelsdeals.app.response.ListOrdersResponse;
 import pl.drivewheelsdeals.app.service.OrderService;
@@ -27,11 +29,13 @@ public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
     private final UserService userService;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderController(OrderService orderService, ProductService productService, UserService userService) {
+    public OrderController(OrderService orderService, ProductService productService, UserService userService, OrderItemRepository orderItemRepository) {
         this.orderService = orderService;
         this.productService = productService;
         this.userService = userService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     @GetMapping("/order")
@@ -59,6 +63,7 @@ public class OrderController {
     }
 
     @PostMapping("/order/make")
+    @Transactional
     public CreateOrderResponse createOrder() throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -91,21 +96,25 @@ public class OrderController {
             }
         }
 
+        basket = customer.getBasket();
+
         Order order = new Order();
         order.setCustomer(customer);
-        order.setItems(basket.stream()
-                .map(product -> new OrderItem(product, order, product.getPrice(), BigDecimal.ZERO))
-                .collect(Collectors.toList()));
 
-        orderService.create(order);
+        order = orderService.create(order);
 
+        for (Product product : basket) {
+            var oi = new OrderItem(product, order, product.getPrice(), BigDecimal.ZERO);
+            order.getItems().add(oi);
+        }
+
+        orderService.update(order);
 
         customer.setBasket(new ArrayList<>());
         userService.updateCustomer(customer);
 
         return new CreateOrderResponse("success");
     }
-
 
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

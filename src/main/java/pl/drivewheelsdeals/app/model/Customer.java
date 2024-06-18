@@ -14,7 +14,7 @@ public class Customer extends User {
     private String city;
     private String street;
     private String country;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Product> basket;
 
 

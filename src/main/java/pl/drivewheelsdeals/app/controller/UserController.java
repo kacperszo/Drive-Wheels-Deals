@@ -52,7 +52,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/profile")
+    @PutMapping("/user/profile")
     public EditProfileResponse editProfile(@Valid @RequestBody EditProfileRequest request) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

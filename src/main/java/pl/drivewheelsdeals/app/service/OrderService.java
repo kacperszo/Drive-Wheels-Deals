@@ -1,6 +1,7 @@
 package pl.drivewheelsdeals.app.service;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import pl.drivewheelsdeals.app.model.Customer;
 import pl.drivewheelsdeals.app.model.Order;
@@ -28,11 +29,16 @@ public class OrderService {
         Customer c = (Customer) userService.findUserById(id);
         return c.getOrders();
     }
+    @Transactional
     public Order create(Order order) {
         return orderRepository.save(order);
     }
 
     public Iterable<Order> findAll() {
         return orderRepository.findAll();
+    }
+
+    public Order update(Order order) {
+        return orderRepository.save(order);
     }
 }

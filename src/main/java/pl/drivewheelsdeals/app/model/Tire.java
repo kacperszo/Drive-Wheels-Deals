@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 public class Tire extends Product {
@@ -48,5 +49,19 @@ public class Tire extends Product {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Tire tire = (Tire) o;
+        return Objects.equals(id, tire.id) && Objects.equals(brand, tire.brand) && Objects.equals(size, tire.size);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, brand, size);
     }
 }

@@ -1,10 +1,13 @@
 package pl.drivewheelsdeals.app.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "orders")
@@ -12,14 +15,16 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Customer customer;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
     private Timestamp orderDate;
     private BigDecimal totalDiscount;
 
     public Order() {
+        items = new ArrayList<>();
     }
 
     public List<OrderItem> getItems() {
@@ -67,5 +72,18 @@ public class Order {
 
     public void setTotalDiscount(BigDecimal totalDiscount) {
         this.totalDiscount = totalDiscount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id) && Objects.equals(customer, order.customer) && Objects.equals(items, order.items) && Objects.equals(orderDate, order.orderDate) && Objects.equals(totalDiscount, order.totalDiscount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customer, items, orderDate, totalDiscount);
     }
 }
