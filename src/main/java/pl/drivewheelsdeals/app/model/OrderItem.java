@@ -28,4 +28,12 @@ public class OrderItem {
     private int quantity;
     private BigDecimal unitPrice;
     private BigDecimal discount;
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
 }
