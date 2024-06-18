@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/user/profile")
-    public ResponseEntity<EditProfileResponse> editProfile(@Valid @RequestBody EditProfileRequest request) throws BadRequestException {
+    public EditProfileResponse editProfile(@Valid @RequestBody EditProfileRequest request) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated()) {
@@ -81,24 +81,19 @@ public class UserController {
 
         customer = userService.updateCustomer(customer);
 
-        return ResponseEntity.ok(new EditProfileResponse(customer));
+        return new EditProfileResponse(customer);
     }
 
     @GetMapping("/user/profile")
-    public ResponseEntity<EditProfileResponse> seeProfile() throws BadRequestException {
+    public EditProfileResponse seeProfile() throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (userService.isAdministrator(user)) {
             throw new BadRequestException("As Admin you cannot edit your customer profile");
         }
         Customer customer = (Customer) user;
-        return ResponseEntity.ok(new EditProfileResponse(customer));
+        return new EditProfileResponse(customer);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

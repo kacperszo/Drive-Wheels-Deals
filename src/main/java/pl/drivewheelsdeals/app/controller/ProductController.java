@@ -43,16 +43,11 @@ public class ProductController {
         return productService.getAllProducts(pageRequest);
     }
 
-    @PostMapping("/product/add")
-    public ResponseEntity<ProductCreateEditResponse> addProduct(@Valid @RequestBody ProductOperationRequest request) throws BadRequestException {
+    @PostMapping("/product/admin/add")
+    public ProductCreateEditResponse addProduct(@Valid @RequestBody ProductOperationRequest request) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (!userService.isAdministrator(user)) {
             throw new BadRequestException("User is not an admin");
         }
@@ -66,7 +61,7 @@ public class ProductController {
 
             productService.createProduct(product);
 
-            return ResponseEntity.ok(new ProductCreateEditResponse(product));
+            return new ProductCreateEditResponse(product);
 
         } else if (request.product_type.equals("Tire")) {
             Tire product = new Tire();
@@ -76,22 +71,17 @@ public class ProductController {
 
             productService.createProduct(product);
 
-            return ResponseEntity.ok(new ProductCreateEditResponse(product));
+            return new ProductCreateEditResponse(product);
         } else {
             throw new BadRequestException("Invalid product type");
         }
     }
 
-    @PostMapping("/product/edit")
-    public ResponseEntity<ProductCreateEditResponse> editProduct(@Valid @RequestBody ProductOperationRequest request) throws BadRequestException {
+    @PostMapping("/product/admin/edit")
+    public ProductCreateEditResponse editProduct(@Valid @RequestBody ProductOperationRequest request) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (!userService.isAdministrator(user)) {
             throw new BadRequestException("User is not an admin");
         }
@@ -105,7 +95,7 @@ public class ProductController {
 
             product = (Car) productService.updateProduct(product);
 
-            return ResponseEntity.ok(new ProductCreateEditResponse(product));
+            return new ProductCreateEditResponse(product);
 
         } else if (request.product_type.equals("Tire")) {
             Tire product = (Tire) productService.getById(request.id);
@@ -114,23 +104,18 @@ public class ProductController {
 
             product = (Tire) productService.updateProduct(product);
 
-            return ResponseEntity.ok(new ProductCreateEditResponse(product));
+            return new ProductCreateEditResponse(product);
 
         } else {
             throw new BadRequestException("Invalid product type");
         }
     }
 
-    @PostMapping("/product/delete")
+    @PostMapping("/product/admin/delete")
     public ProductRemoveResponse deleteProduct(@Valid @RequestBody ProductOperationRequest request) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (!userService.isAdministrator(user)) {
             throw new BadRequestException("User is not an admin");
         }
@@ -141,7 +126,7 @@ public class ProductController {
 
             productService.removeProduct(product);
 
-            return new ProductRemoveResponse("success -> deleted product id: " + product.getId());
+            return new ProductRemoveResponse("success");
 
         } else if (request.product_type.equals("Tire")) {
             Tire product = new Tire();
@@ -149,7 +134,7 @@ public class ProductController {
 
             productService.removeProduct(product);
 
-            return new ProductRemoveResponse("success -> deleted product id: " + product.getId());
+            return new ProductRemoveResponse("success");
         } else {
             throw new BadRequestException("Invalid product type");
         }

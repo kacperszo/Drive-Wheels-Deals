@@ -1,6 +1,5 @@
 package pl.drivewheelsdeals.app.controller;
 
-import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -12,7 +11,6 @@ import pl.drivewheelsdeals.app.model.Customer;
 import pl.drivewheelsdeals.app.model.Order;
 import pl.drivewheelsdeals.app.model.OrderItem;
 import pl.drivewheelsdeals.app.model.User;
-import pl.drivewheelsdeals.app.request.ListOrdersRequest;
 import pl.drivewheelsdeals.app.response.CreateOrderResponse;
 import pl.drivewheelsdeals.app.response.ListOrdersResponse;
 import pl.drivewheelsdeals.app.service.OrderService;
@@ -40,55 +38,38 @@ public class OrderController {
 
     @GetMapping("/order")
     public ListOrdersResponse listOrdersFromUserById() throws BadRequestException {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
-        try {
-            return new ListOrdersResponse(orderService.findOrdersFromUserById(user.getId()));
-        } catch (Exception e) {
-            throw new BadRequestException(e.getMessage());
-        }
+
+
+        return new ListOrdersResponse(orderService.findOrdersFromUserById(user.getId()));
+
     }
 
-    @GetMapping("/admin/order")
+    @GetMapping("/order/admin")
     public Iterable<Order> listOrders() throws BadRequestException {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (!userService.isAdministrator(user)) {
-            throw new BadRequestException("As Admin you cannot edit your customer profile");
+            throw new BadRequestException("Only admin has access to this resource");
         }
 
-        try {
-            return orderService.findAll();
-        } catch (Exception e) {
-            throw new BadRequestException(e.getMessage());
-        }
+        return orderService.findAll();
     }
 
     @PostMapping("/order/make")
     public CreateOrderResponse createOrder() throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
+
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (userService.isAdministrator(user)) {
-            throw new BadRequestException("As Admin you cannot edit your customer profile");
+            throw new BadRequestException("As Admin you cannot make an order");
         }
+
         Customer customer = (Customer) user;
 
         Order order = new Order();
