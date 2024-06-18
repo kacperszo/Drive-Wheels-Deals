@@ -1,12 +1,17 @@
 package pl.drivewheelsdeals.app.service;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
+import pl.drivewheelsdeals.app.model.Car;
+import pl.drivewheelsdeals.app.model.Tire;
+import pl.drivewheelsdeals.app.reports.TypeSold;
 import pl.drivewheelsdeals.app.repository.OrderRepository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.DateTimeException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -35,5 +40,25 @@ public class ReportService {
             }
         });
         return income.get();
+    }
+
+    public List<TypeSold> soldItemsOfEachType() {
+        AtomicInteger cars = new AtomicInteger();
+        AtomicInteger tires = new AtomicInteger();
+
+        orderRepository.findAll().forEach(order -> {
+           order.getItems().forEach(item -> {
+               if (item.getProduct() instanceof Car) {
+                   cars.addAndGet(item.getQuantity());
+               } else if (item.getProduct() instanceof Tire) {
+                   tires.addAndGet(item.getQuantity());
+               }
+           });
+        });
+
+        var carsSold = new TypeSold("Car", cars.get());
+        var tiresSold = new TypeSold("Tire", tires.get());
+
+        return List.of(carsSold, tiresSold);
     }
 }

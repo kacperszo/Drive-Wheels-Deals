@@ -36,4 +36,8 @@ public class OrderItem {
     public BigDecimal getUnitPrice() {
         return unitPrice;
     }
+
+    public Product getProduct() {
+        return product;
+    }
 }
