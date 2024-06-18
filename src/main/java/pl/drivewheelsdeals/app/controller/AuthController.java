@@ -14,14 +14,12 @@ import pl.drivewheelsdeals.app.service.JwtService;
 @RestController
 public class AuthController {
 
-    private JwtService jwtService;
-    private AuthenticationManager authenticationManager;
-    private UserDetailsService userDetailsService;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public AuthController(JwtService jwtService, AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")

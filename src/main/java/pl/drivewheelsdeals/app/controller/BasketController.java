@@ -28,18 +28,15 @@ public class BasketController {
     }
 
     @GetMapping("/basket")
-    public List<Product> getBasket() throws BadRequestException {
+    public List<Product> showMyBasket() throws BadRequestException {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         if (userService.isAdministrator(user)) {
-            throw new BadRequestException("As Admin you cannot edit your customer profile");
+            throw new BadRequestException("As Admin you don't have a basket to show");
         }
+
         Customer customer = (Customer) user;
 
         return customer.getBasket();
@@ -49,22 +46,17 @@ public class BasketController {
     @PostMapping("/basket/add/{id}")
     public List<Product> addToBasket(@PathVariable Long id) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
         Product product = productService.getById(id);
         if (product == null) {
             throw new BadRequestException("Product of given id not found");
         }
-        if (userService.isAdministrator(user)) {
-            throw new BadRequestException("As Admin you cannot edit your customer profile");
-        }
-        Customer customer = (Customer) user;
 
+        if (userService.isAdministrator(user)) {
+            throw new BadRequestException("As Admin you cannot edit your basket");
+        }
+
+        Customer customer = (Customer) user;
 
         customer.getBasket().add(product);
 
@@ -74,22 +66,16 @@ public class BasketController {
     @DeleteMapping("/basket/remove/{id}")
     public List<Product> removeFromBasket(@PathVariable Long id) throws BadRequestException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BadRequestException("User is not authenticated");
-        }
         User user = (User) auth.getPrincipal();
-        if (user == null) {
-            throw new BadRequestException("User not found in the authentication context");
-        }
+
         Product product = productService.getById(id);
         if (product == null) {
             throw new BadRequestException("Product of given id not found");
         }
         if (userService.isAdministrator(user)) {
-            throw new BadRequestException("As Admin you cannot edit your customer profile");
+            throw new BadRequestException("As Admin you cannot edit your basket");
         }
         Customer customer = (Customer) user;
-
 
         customer.getBasket().remove(product);
 
