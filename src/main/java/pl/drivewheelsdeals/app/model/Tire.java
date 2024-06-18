@@ -18,8 +18,8 @@ public class Tire extends Product {
     public Tire() {
     }
 
-    public Tire(String brand, String size, BigDecimal price) {
-        super(price);
+    public Tire(String brand, String size, BigDecimal price,int quantityInStock) {
+        super(price, quantityInStock);
         this.brand = brand;
         this.size = size;
     }

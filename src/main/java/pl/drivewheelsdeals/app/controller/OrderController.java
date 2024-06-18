@@ -7,10 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import pl.drivewheelsdeals.app.model.Customer;
-import pl.drivewheelsdeals.app.model.Order;
-import pl.drivewheelsdeals.app.model.OrderItem;
-import pl.drivewheelsdeals.app.model.User;
+import pl.drivewheelsdeals.app.model.*;
 import pl.drivewheelsdeals.app.response.CreateOrderResponse;
 import pl.drivewheelsdeals.app.response.ListOrdersResponse;
 import pl.drivewheelsdeals.app.service.OrderService;
@@ -20,6 +17,7 @@ import pl.drivewheelsdeals.app.service.UserService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -71,17 +69,44 @@ public class OrderController {
         }
 
         Customer customer = (Customer) user;
+        List<Product> basket = customer.getBasket();
+
+
+        Map<Long, Long> productCountMap = basket.stream()
+                .collect(Collectors.groupingBy(Product::getId, Collectors.counting()));
+
+        List<Long> productIds = new ArrayList<>(productCountMap.keySet());
+        List<Product> productsInStock = productService.getByIds(productIds);
+
+        Map<Long, Product> productMap = productsInStock.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
+
+        for (Map.Entry<Long, Long> entry : productCountMap.entrySet()) {
+            Long productId = entry.getKey();
+            Long countInBasket = entry.getValue();
+            Product product = productMap.get(productId);
+
+            if (product == null || product.getQuantityInStock() < countInBasket) {
+                throw new BadRequestException("Product with id " + productId + " is not in stock.");
+            }
+        }
 
         Order order = new Order();
         order.setCustomer(customer);
-        order.setItems(customer.getBasket().stream().map(product -> new OrderItem(product, order, 1, product.getPrice(), BigDecimal.ZERO)).collect(Collectors.toList()));
+        order.setItems(basket.stream()
+                .map(product -> new OrderItem(product, order, product.getPrice(), BigDecimal.ZERO))
+                .collect(Collectors.toList()));
 
         orderService.create(order);
+
+
         customer.setBasket(new ArrayList<>());
         userService.updateCustomer(customer);
 
         return new CreateOrderResponse("success");
     }
+
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

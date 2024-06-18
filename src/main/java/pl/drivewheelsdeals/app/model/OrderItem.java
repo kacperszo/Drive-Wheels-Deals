@@ -13,10 +13,9 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    public OrderItem(Product product, Order order, int quantity, BigDecimal unitPrice, BigDecimal discount) {
+    public OrderItem(Product product, Order order, BigDecimal unitPrice, BigDecimal discount) {
         this.product = product;
         this.order = order;
-        this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.discount = discount;
     }
@@ -25,7 +24,6 @@ public class OrderItem {
     private Product product;
     @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
-    private int quantity;
     private BigDecimal unitPrice;
     private BigDecimal discount;
 }

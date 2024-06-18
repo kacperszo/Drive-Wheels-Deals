@@ -11,6 +11,8 @@ import pl.drivewheelsdeals.app.repository.CarRepository;
 import pl.drivewheelsdeals.app.repository.ProductRepository;
 import pl.drivewheelsdeals.app.repository.TireRepository;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -71,5 +73,9 @@ public class ProductService {
             }
         }
 
+    }
+
+    public List<Product> getByIds(List<Long> productIds) {
+        return productRepository.findAllById(productIds);
     }
 }

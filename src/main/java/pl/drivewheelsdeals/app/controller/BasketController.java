@@ -57,8 +57,16 @@ public class BasketController {
         }
 
         Customer customer = (Customer) user;
+        //check if product is in stock
+        List<Product> basket = customer.getBasket();
+        long inBasket = basket.stream().filter(p->p.getId().equals(id)).count();
+        boolean inStock = product.getQuantityInStock() - (inBasket + 1) >= 0;
 
-        customer.getBasket().add(product);
+        if(inStock){
+            basket.add(product);
+        }else{
+            throw new BadRequestException("Not enough products in stock");
+        }
 
         return userService.updateCustomer(customer).getBasket();
     }

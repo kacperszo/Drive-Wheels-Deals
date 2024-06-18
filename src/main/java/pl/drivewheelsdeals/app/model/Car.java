@@ -17,8 +17,8 @@ public class Car extends Product {
     int year;
 
 
-    public Car(String brand, String model, int year, BigDecimal price) {
-        super(price);
+    public Car(String brand, String model, int year, BigDecimal price,int quantityInStock) {
+        super(price,quantityInStock);
         this.brand = brand;
         this.model = model;
         this.year = year;
