@@ -38,7 +38,7 @@ public class ReportService {
             if (order.getOrderDate().after(from) && order.getOrderDate().before(to)) {
                 var orderIncome = new AtomicReference<>(BigDecimal.ZERO);
                 order.getItems().forEach(item -> {
-                   orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))));
+//                   orderIncome.set(orderIncome.get().add(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))));
                 });
                 income.set(income.get().add((orderIncome.get().subtract(orderIncome.get().multiply(order.getTotalDiscount())))));
             }
