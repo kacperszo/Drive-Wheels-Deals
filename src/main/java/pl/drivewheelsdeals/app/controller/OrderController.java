@@ -98,6 +98,7 @@ public class OrderController {
 
         Order order = new Order();
         order.setCustomer(customer);
+        order.setTotalDiscount(BigDecimal.valueOf(0));
 
         order = orderService.create(order);
 
@@ -170,24 +171,4 @@ public class OrderController {
         return new SetOrderItemDiscountResponse(updated);
     }
 
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadRequestException.class)
-    public Map<String, String> handleGeneralBadRequestExceptions(BadRequestException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("error", ex.getMessage());
-        return errors;
-    }
 }
